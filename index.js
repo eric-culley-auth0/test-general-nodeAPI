@@ -2,6 +2,7 @@
 const app = require('express')();
 const axios = require('axios').default;
 const dotenv = require('dotenv');
+const cors = require('cors');
 const jwt = require('express-jwt');
 const jwks = require('jwks-rsa');
 
@@ -16,11 +17,11 @@ const AUDIENCE = process.env.AUTH0_AUDIENCE;
 
 // Auth
 const jwtCheck = jwt({
-      secret: jwks.expressJwtSecret({
-          cache: true,
-          rateLimit: true,
-          jwksRequestsPerMinute: 5,
-          jwksUri: `https://${DOMAIN}/.well-known/jwks.json`
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: `https://${DOMAIN}/.well-known/jwks.json`
     }),
     audience: `${AUDIENCE}`,
     issuer: `https://${DOMAIN}/`,
@@ -29,6 +30,7 @@ const jwtCheck = jwt({
 
 // Middleware
 // app.use(jwtCheck);
+app.use(cors())
 
 // Routes
 app.get('/', (req, res) => {
@@ -41,7 +43,7 @@ app.get('/', (req, res) => {
 
 app.get('/auth', jwtCheck, (req, res) => {
     res.send({
-        message: "!!!AUTHORIZED!!!", 
+        message: `!!!AUTHORIZED!!!${"\n"}!!!SUPER SECRET DATA!!!`, 
         public: false,
     })
 })
